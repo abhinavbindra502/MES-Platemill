@@ -39,184 +39,187 @@ export default function DashboardPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        setUploadStatus(`Success: File "${file.name}" processed successfully!`);
+        await response.json();
+        setUploadStatus(`✅ Success: File "${file.name}" processed into MES Database!`);
       } else {
-        setUploadStatus(`Upload completed with response code ${response.status}.`);
+        setUploadStatus(`ℹ️ File "${file.name}" uploaded (API status: ${response.status}).`);
       }
-    } catch (err) {
-      setUploadStatus(`Uploaded file "${file.name}" locally to MES parser.`);
+    } catch {
+      setUploadStatus(`ℹ️ File "${file.name}" ingested locally.`);
     } finally {
       setIsUploading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6">
+    <div className="dashboard-container">
       {/* Header */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-slate-800 pb-4 gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-            <span className="p-2 bg-sky-600 rounded-lg text-white">🏭</span>
-            Plate Mill MES Monitoring System
-          </h1>
-          <p className="text-slate-400 text-sm mt-1">
-            Manufacturing Execution System • Real-Time Plant Operations & Analytics
-          </p>
+      <header className="dashboard-header">
+        <div className="header-title-box">
+          <div className="header-icon">🏭</div>
+          <div>
+            <h1 className="header-title">Plate Mill MES Monitoring System</h1>
+            <p className="header-subtitle">
+              Manufacturing Execution System • Real-Time Plant Operations & Analytics
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center gap-3 bg-slate-900 px-4 py-2 rounded-xl border border-slate-800">
-          <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Backend API:</span>
+        <div className="api-badge">
+          <span>Backend API:</span>
           {apiStatus === "checking" && (
-            <span className="flex items-center gap-1.5 text-amber-400 text-xs font-semibold">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-              Checking...
-            </span>
+            <>
+              <span className="badge-status-dot offline" />
+              <span style={{ color: "#f59e0b" }}>Connecting...</span>
+            </>
           )}
           {apiStatus === "connected" && (
-            <span className="flex items-center gap-1.5 text-emerald-400 text-xs font-semibold">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-              Connected ({API_URL})
-            </span>
+            <>
+              <span className="badge-status-dot connected" />
+              <span style={{ color: "#10b981" }}>Connected ({API_URL})</span>
+            </>
           )}
           {apiStatus === "offline" && (
-            <span className="flex items-center gap-1.5 text-rose-400 text-xs font-semibold">
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-              Offline / Standalone Mode
-            </span>
+            <>
+              <span className="badge-status-dot offline" />
+              <span style={{ color: "#f43f5e" }}>Offline / Standalone Mode</span>
+            </>
           )}
         </div>
       </header>
 
-      {/* KPI Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-          <div className="flex justify-between items-center text-slate-400 text-sm font-medium mb-2">
-            <span>Daily Production</span>
-            <span className="text-emerald-400 text-xs font-bold bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/40">+4.2%</span>
+      {/* KPI Cards */}
+      <div className="kpi-grid">
+        <div className="kpi-card">
+          <div className="kpi-card-header">
+            <span className="kpi-title">Daily Production</span>
+            <span className="kpi-trend positive">+4.2%</span>
           </div>
-          <div className="text-3xl font-black text-white">1,480 <span className="text-base font-semibold text-slate-400">MT</span></div>
-          <div className="text-xs text-slate-500 mt-2">Target: 1,500 MT / Shift</div>
+          <div className="kpi-value">
+            1,480 <span className="kpi-unit">MT</span>
+          </div>
+          <div className="kpi-footer">Target: 1,500 MT / Shift</div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-          <div className="flex justify-between items-center text-slate-400 text-sm font-medium mb-2">
-            <span>Overall Yield Rate</span>
-            <span className="text-emerald-400 text-xs font-bold bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/40">+1.1%</span>
+        <div className="kpi-card">
+          <div className="kpi-card-header">
+            <span className="kpi-title">Overall Yield Rate</span>
+            <span className="kpi-trend positive">+1.1%</span>
           </div>
-          <div className="text-3xl font-black text-sky-400">92.4 <span className="text-base font-semibold text-slate-400">%</span></div>
-          <div className="text-xs text-slate-500 mt-2">Prime Plate Acceptance</div>
+          <div className="kpi-value" style={{ color: "#38bdf8" }}>
+            92.4 <span className="kpi-unit">%</span>
+          </div>
+          <div className="kpi-footer">Prime Plate Acceptance</div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-          <div className="flex justify-between items-center text-slate-400 text-sm font-medium mb-2">
-            <span>Mill Availability</span>
-            <span className="text-amber-400 text-xs font-bold bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-800/40">Active</span>
+        <div className="kpi-card">
+          <div className="kpi-card-header">
+            <span className="kpi-title">Mill Availability</span>
+            <span className="kpi-trend positive">Active</span>
           </div>
-          <div className="text-3xl font-black text-emerald-400">88.7 <span className="text-base font-semibold text-slate-400">%</span></div>
-          <div className="text-xs text-slate-500 mt-2">Rolling Line Runtime</div>
+          <div className="kpi-value" style={{ color: "#10b981" }}>
+            88.7 <span className="kpi-unit">%</span>
+          </div>
+          <div className="kpi-footer">Rolling Line Runtime</div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg">
-          <div className="flex justify-between items-center text-slate-400 text-sm font-medium mb-2">
-            <span>Active Quality Alerts</span>
-            <span className="text-rose-400 text-xs font-bold bg-rose-950/60 px-2 py-0.5 rounded-full border border-rose-800/40">2 Alerts</span>
+        <div className="kpi-card">
+          <div className="kpi-card-header">
+            <span className="kpi-title">Quality Alerts</span>
+            <span className="kpi-trend alert">2 Alerts</span>
           </div>
-          <div className="text-3xl font-black text-rose-400">02 <span className="text-base font-semibold text-slate-400">Issues</span></div>
-          <div className="text-xs text-slate-500 mt-2">Thickness variation flag</div>
+          <div className="kpi-value" style={{ color: "#f43f5e" }}>
+            02 <span className="kpi-unit">Issues</span>
+          </div>
+          <div className="kpi-footer">Thickness variation flag</div>
         </div>
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        {/* Local Excel File Upload Box */}
-        <div className="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">📊</span>
-              <h2 className="text-lg font-bold text-white">Local Excel Data Ingestion</h2>
-            </div>
-            <p className="text-slate-400 text-sm mb-4 leading-relaxed">
-              Upload your operational Excel file (<code className="text-sky-300 font-mono text-xs">.xlsx</code>) from your computer to ingest shift metrics into the MES backend.
-            </p>
+      {/* Main Grid */}
+      <div className="main-grid">
+        {/* Local Excel Upload */}
+        <div className="dashboard-panel">
+          <div className="panel-header">
+            <span className="panel-icon">📊</span>
+            <h2 className="panel-title">Local Excel Data Ingestion</h2>
+          </div>
+          <p className="panel-description">
+            Upload your operational Excel report (<code style={{ color: "#38bdf8" }}>.xlsx</code>) from your computer to ingest shift metrics into the MES backend.
+          </p>
 
-            <div className="border-2 border-dashed border-slate-700 hover:border-sky-500 transition-colors rounded-xl p-6 text-center cursor-pointer bg-slate-950/50 mb-4">
-              <input
-                type="file"
-                accept=".xlsx, .xls"
-                onChange={handleFileUpload}
-                disabled={isUploading}
-                className="hidden"
-                id="excel-file-input"
-              />
-              <label htmlFor="excel-file-input" className="cursor-pointer block">
-                <div className="text-3xl mb-2">📁</div>
-                <span className="text-sm font-semibold text-sky-400 block mb-1">
-                  {isUploading ? "Uploading File..." : "Click or Drag Excel File"}
-                </span>
-                <span className="text-xs text-slate-500 block">Supports .xlsx, .xls operational reports</span>
-              </label>
-            </div>
-
-            {uploadStatus && (
-              <div className="p-3 bg-slate-800/80 border border-slate-700 rounded-lg text-xs font-mono text-slate-300">
-                {uploadStatus}
-              </div>
-            )}
+          <div className="dropzone">
+            <input
+              type="file"
+              accept=".xlsx, .xls"
+              onChange={handleFileUpload}
+              disabled={isUploading}
+              className="upload-input"
+              id="excel-file-input"
+            />
+            <label htmlFor="excel-file-input" style={{ cursor: "pointer", display: "block" }}>
+              <div className="dropzone-icon">📂</div>
+              <span className="dropzone-title">
+                {isUploading ? "Uploading & Processing..." : "Click or Drag Excel File"}
+              </span>
+              <span className="dropzone-text">Supports .xlsx, .xls plant reports</span>
+            </label>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-800 text-xs text-slate-500">
-            Backend API Target: <span className="font-mono text-slate-400">{API_URL}/upload</span>
+          {uploadStatus && <div className="upload-status-box">{uploadStatus}</div>}
+
+          <div className="kpi-footer" style={{ marginTop: "1.5rem", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "0.75rem" }}>
+            Target Endpoint: <code style={{ color: "#94a3b8" }}>{API_URL}/upload</code>
           </div>
         </div>
 
-        {/* Live Mill Operational Summary */}
-        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-white flex items-center gap-2">
-              <span>⚡</span> Shift Performance Overview
-            </h2>
-            <span className="text-xs bg-sky-950 text-sky-300 border border-sky-800/50 px-2.5 py-1 rounded-full font-medium">Shift A • Live</span>
+        {/* Live Operational Progress */}
+        <div className="dashboard-panel">
+          <div className="panel-header" style={{ justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <span className="panel-icon">⚡</span>
+              <h2 className="panel-title">Shift Performance Overview</h2>
+            </div>
+            <span className="kpi-trend positive" style={{ fontSize: "0.8rem", padding: "0.3rem 0.75rem" }}>Shift A • Live</span>
           </div>
 
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-300 font-medium">Furnace Discharge Rate</span>
-                <span className="text-sky-400 font-bold">94%</span>
+          <div style={{ marginTop: "1.5rem" }}>
+            <div className="meter-row">
+              <div className="meter-label-group">
+                <span className="meter-name">Furnace Discharge Rate</span>
+                <span className="meter-val">94%</span>
               </div>
-              <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-sky-500 h-full rounded-full" style={{ width: "94%" }} />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-300 font-medium">Roughing Mill Pass Schedule</span>
-                <span className="text-emerald-400 font-bold">98%</span>
-              </div>
-              <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-emerald-500 h-full rounded-full" style={{ width: "98%" }} />
+              <div className="meter-track">
+                <div className="meter-fill cyan" style={{ width: "94%" }} />
               </div>
             </div>
 
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-300 font-medium">Finishing Mill Flatness Index</span>
-                <span className="text-amber-400 font-bold">89%</span>
+            <div className="meter-row">
+              <div className="meter-label-group">
+                <span className="meter-name">Roughing Mill Pass Schedule</span>
+                <span className="meter-val" style={{ color: "#10b981" }}>98%</span>
               </div>
-              <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-amber-500 h-full rounded-full" style={{ width: "89%" }} />
+              <div className="meter-track">
+                <div className="meter-fill emerald" style={{ width: "98%" }} />
               </div>
             </div>
 
-            <div>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-slate-300 font-medium">Accelerated Cooling (ACC) Target Temp</span>
-                <span className="text-purple-400 font-bold">96%</span>
+            <div className="meter-row">
+              <div className="meter-label-group">
+                <span className="meter-name">Finishing Mill Flatness Index</span>
+                <span className="meter-val" style={{ color: "#f59e0b" }}>89%</span>
               </div>
-              <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-                <div className="bg-purple-500 h-full rounded-full" style={{ width: "96%" }} />
+              <div className="meter-track">
+                <div className="meter-fill amber" style={{ width: "89%" }} />
+              </div>
+            </div>
+
+            <div className="meter-row">
+              <div className="meter-label-group">
+                <span className="meter-name">Accelerated Cooling (ACC) Target Temp</span>
+                <span className="meter-val" style={{ color: "#c084fc" }}>96%</span>
+              </div>
+              <div className="meter-track">
+                <div className="meter-fill purple" style={{ width: "96%" }} />
               </div>
             </div>
           </div>
